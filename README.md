@@ -57,4 +57,4 @@ $ uv buid
 
 ## Contributing
 
-Contributions and are welcome! 
+PRs and issues are welcome! 
