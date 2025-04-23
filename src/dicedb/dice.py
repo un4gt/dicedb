@@ -1,55 +1,39 @@
-import socket
-from typing import Any
+"""DiceDB client."""
 
+import socket
+import uuid
+
+from . import const
 from .commands import DiceCommands
 from .exceptions import (
     DiceConnectionError,
     DiceSendCommandError,
-    DiceResponseTooLargeError,
-    DiceResponseError,
+    DiceResponseTooLargeError
 )
-from .cmd_pb2 import Command as PBCommand
-from .cmd_pb2 import Response as PBResponse
-from . import const
-
-
-
-def _serialize_as_pytype(resp: PBResponse) -> Any:
-    if resp.err:
-        return DiceResponseError(resp.err)
-
-    if resp.WhichOneof('value') is not None:
-        one_of = resp.WhichOneof('value')
-        if one_of == "v_nil" and resp.v_nil:
-            return None
-        return getattr(resp, one_of)
-
-
-    if resp.v_ss_map:
-        return dict(resp.v_ss_map.items())
-
-    return None
-
+from .proto.cmd_pb2 import Command
+from .proto.res_pb2 import Result
+from .utils.response_deserializer import deserialize
 
 
 class Dice(DiceCommands):
-    """
-    An synchronous client for DiceDB.
-    """
+    """An synchronous client for DiceDB."""
 
-    def __init__(self, host: str, port: int, timeout: float = 5.0):
+    def __init__(self, host: str, port: int, timeout: float = 5.0, try_to_convert: bool = False) -> None:
         """Initialize the Dice client.
 
         Args:
             host (str): DiceDB server host
             port (int): DiceDB server port
             timeout (float): Connection timeout in seconds
+            try_to_convert (bool): Convert the response type if server response value is string-int
         """
         self._host = host
         self._port = port
         self._timeout = timeout
         self._socket = None
         self._connected: bool = False
+        self._try_to_convert: bool = try_to_convert
+        self._client_id = str(uuid.uuid4())
         self._connect()
         self._do_handshake()
 
@@ -73,28 +57,42 @@ class Dice(DiceCommands):
             ) from e
 
     def _do_handshake(self):
-        self._handshake()
+        self._handshake(self._client_id)
 
     def _fire(self, cmd: str, *args):
         if not self._connected:
             raise DiceConnectionError('Not connected to the server.')
 
-        # Create a command protobuf object
-        current_command = PBCommand()
-        current_command.cmd = cmd
-        current_command.args.extend([str(arg) for arg in args])
+        current_command = self._build_command(cmd, *args)
 
         self._send_command(current_command)
-        return _serialize_as_pytype(self._read_response_and_parse())
+        result = self._read_response_and_parse()
+        return deserialize(result, try_to_convert=self._try_to_convert)
 
-    def _send_command(self, cmd: PBCommand):
+    @staticmethod
+    def _build_command(cmd: str, *args) -> Command:
+        """Build a command protobuf object.
+
+        Args:
+            cmd (str): The command to be executed.
+            *args: The arguments for the command.
+
+        Returns:
+            Command: The built command object.
+        """
+        command = Command()
+        command.cmd = cmd
+        command.args.extend([str(arg) for arg in args])
+        return command
+
+    def _send_command(self, cmd: Command):
         byte_string = cmd.SerializeToString()
         try:
             self._socket.sendall(byte_string)
         except OSError as e:
             raise DiceSendCommandError('Failed to send command') from e
 
-    def _read_response_and_parse(self) -> PBResponse:
+    def _read_response_and_parse(self) -> Result:
         buffer = bytearray(const.MAX_REQUEST_SIZE)
         mv = memoryview(buffer)
         received_bytes_size = 0
@@ -118,9 +116,9 @@ class Dice(DiceCommands):
             if nbytes < const.IO_BUFFER_SIZE:
                 break
 
-        pb_response = PBResponse()
-        pb_response.ParseFromString(mv[:received_bytes_size])
-        return pb_response
+        result = Result()
+        result.ParseFromString(mv[:received_bytes_size])
+        return result
 
     def close(self):
         """Close the connection to the server.
@@ -142,6 +140,7 @@ class Dice(DiceCommands):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit method for the context manager.
+
         Returns:
             None
         """
