@@ -1,6 +1,7 @@
+"""These tests will run with `try_to_convert=True`."""
 from dicedb import Dice
 
-dice = Dice('localhost', 7379)
+dice = Dice('localhost', 7379, try_to_convert=True)
 dice.flushdb()
 
 def test_decr():
@@ -39,33 +40,36 @@ def test_flushdb():
     dice.set('k-flushdb-1', 'v-flushdb-2')
     dice.flushdb()
 
-    assert dice.get('k-flushdb') is None
-    assert dice.get('k-flushdb-1') is None
+    assert dice.get('k-flushdb') == ''
+    assert dice.get('k-flushdb-1') == ''
 
 
 def test_get():
     dice.set('k-get', 'v-get')
 
     assert dice.get('k-get') == 'v-get'
-    assert dice.get('k-get-non-exists') is None
+    assert dice.get('k-get-non-exists') is ''
 
 def test_get_del():
     dice.set('k-get-del', 'v-get-del')
 
     assert dice.get_del('k-get-del') == 'v-get-del'
-    assert dice.get('k-get-del') is None
+    assert dice.get('k-get-del') == ''
 
 def test_hget():
     dice.hset('k-hget', 'field1', 'value1')
 
     assert dice.hget('k-hget', 'field1') == 'value1'
-    assert dice.hget('k-hget', 'field2') is None
+    assert dice.hget('k-hget', 'field2') == ''
 
 def test_hget_all():
     dice.hset('k-hget-all', 'field1', 'value1', 'field2', 'value2')
 
     assert dice.hget_all('k-hget-all') == {'field1': 'value1', 'field2': 'value2'}
-    assert dice.hget_all('k-non-exists') is None
+    assert dice.hget_all('k-non-exists') == {}
+
+    dice.hset('k-hget-all-with-int-value', 'field1', 23, 'field2', 74)
+    assert dice.hget_all('k-hget-all-with-int-value') == {'field1': 23, 'field2': 74}
 
 
 def test_incr():
@@ -124,11 +128,11 @@ def test_get_ex():
 
 
 def test_set():
-    assert 'OK' == dice.set('k-set', 'v-set')
-    assert 'OK' == dice.set('k-set', 'v-set', ex=10)
-    assert 'OK' == dice.set('k-set', 'v-set', px=10000)
-    assert 'OK' == dice.set('k-set', 'v-set', exat=1772377267)
-    assert 'OK' == dice.set('k-set', 'v-set', pxat=1772377267000)
+    assert dice.set('k-set', 'v-set') is None
+    assert dice.set('k-set', 'v-set', ex=10) is None
+    assert dice.set('k-set', 'v-set', px=10000) is None
+    assert dice.set('k-set', 'v-set', exat=1772377267) is None
+    assert dice.set('k-set', 'v-set', pxat=1772377267000) is None
     assert dice.set('k-set', 'v-set', nx=True) is None
-    assert 'OK' == dice.set('k-set', 'v-set', xx=True)
-    assert 'v-set' == dice.set('k-set', 'v-set', get=True)
+    assert dice.set('k-set', 'v-set', xx=True) is None
+    assert dice.set('k-set', 'v-set', keep_ttl=True) is None
