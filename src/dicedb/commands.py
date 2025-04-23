@@ -1,5 +1,7 @@
+"""Commands module for DiceDB client."""
+
 import uuid
-from typing import Any, Dict, List, Literal, Optional, Protocol
+from typing import Any, Literal, Protocol
 from typing import Union, Iterable
 
 from . import const
@@ -142,7 +144,6 @@ class DiceCommands(_CommandsProtocol):
         xx: bool = False,
         nx: bool = False,
         keep_ttl: bool = False,
-        get: bool = False,
     ) -> Union[int, str]:
         pieces = [key, value]
         if ex is not None:
@@ -161,14 +162,37 @@ class DiceCommands(_CommandsProtocol):
         if xx:
             pieces.append('XX')
 
-        if get:
-            pieces.append('GET')
 
-        return self._fire('SET', key, value, *pieces)
+        return self._fire('SET', *pieces)
 
-    def _handshake(self):
-        client_id = str(uuid.uuid4())
+    def _handshake(self, client_id: str):
         return self._fire('HANDSHAKE', client_id, 'command')
 
     def unwatch(self, fingerprint: str):
+        return self._fire('UNWATCH', fingerprint)
+
+    def zadd(self):
         raise NotImplementedError()
+
+    def zcard(self, key: str) -> int:
+        return self._fire('ZADD', key)
+
+    def zcount(self, key: str, min_score: int, max_score: int) -> int:
+        return self._fire('ZCOUNT', key, min_score, max_score)
+
+    def zpopmax(self, key: str, count: Union[int, None] = None):
+        args = (count is not None) and [count] or []
+        return self._fire('ZPOPMAX', key, *args)
+
+    def zpopmin(self, key: str, count: Union[int, None] = None):
+        args = (count is not None) and [count] or []
+        return self._fire('ZPOPMIN', key, *args)
+
+    def zrange(self, key: str, start: int, end: int):
+        return self._fire('ZRANGE', key, start, end)
+
+    def zrank(self, key: str, member: str):
+        return self._fire('ZRANK', key, member)
+
+    def zrem(self, key: str, *args):
+        return self._fire('ZREM', key, *args)
