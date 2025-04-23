@@ -1,3 +1,5 @@
+"""Constants for the Dicedb project."""
+
 MAX_REQUEST_SIZE = 32 * 1024 * 1024
 IO_BUFFER_SIZE = 16 * 1024
 
