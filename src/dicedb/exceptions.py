@@ -1,3 +1,5 @@
+"""Custom exceptions for the DiceDB library."""
+
 class DiceError(Exception):
     """Base class for all exceptions raised by the DiceDB library."""
     pass
@@ -28,4 +30,12 @@ class DiceResponseError(DiceCommandError):
 
 class DiceParamError(DiceError):
     """Exception raised for parameter-related errors."""
+    pass
+
+class DiceQueryError(DiceError):
+    """Exception raised for query-related errors."""
+    pass
+
+class DiceQueryEmptyResponseError(DiceQueryError):
+    """Exception raised when a query returns an empty response."""
     pass
