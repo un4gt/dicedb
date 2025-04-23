@@ -58,3 +58,15 @@ $ uv buid
 ## Contributing
 
 PRs and issues are welcome! 
+
+## About Developing
+
+### Generate Python Proto Files
+
+*cmd.proto and res.proto comes from https://github.com/DiceDB/dicedb-protos*
+
+On Windows: 
+
+```bash
+protoc -I=protos\ --python_out=src\dicedb\proto\ --pyi_out=src\dicedb\proto cmd.proto res.proto
+```
