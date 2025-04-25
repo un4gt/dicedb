@@ -1,0 +1,55 @@
+site_name: Dicedb
+site_description: A simple DiceDB client for Python
+site_url: https://un4gt.github.io/dicedb/
+docs_dir: docs
+repo_url: https://github.com/un4gt/dicedb
+repo_name: un4gt/dicedb
+copyright: Copyright (c) 2025 Lambda
+
+theme:
+  language: en
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.top
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - search.highlight
+    - search.share
+    - search.suggest
+  palette:
+    primary: green
+    accent: light-green
+
+nav:
+  - "Home": index.md
+  - "Install": install.md
+  - "Quick Start": quick_start.md
+  - "Examples": examples.md
+
+
+plugins:
+  - termynal:
+      title: "shell"
+      buttons: "macos"
+      prompt_literal_start:
+        - "$"
+        - ">"
+        - ">>>"
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+
+markdown_extensions:
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
