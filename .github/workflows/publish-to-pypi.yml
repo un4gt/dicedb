@@ -28,7 +28,7 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: Install the project
-        run: uv sync
+        run: uv sync --no-group docs
       - name: Build the project
         run: uv build
       - name: pypi-publish-by-uv

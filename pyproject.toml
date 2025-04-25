@@ -33,12 +33,6 @@ Repository = "https://github.com/un4gt/dicedb.git"
 "Bug Tracker" = "https://github.com/un4gt/dicedb/issues"
 Changelog = "https://github.com/un4gt/dicedb.git/blob/main/CHANGELOG.md"
 
-[project.optional-dependencies]
-docs = [
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.6.12",
-    "termynal>=0.2.0",
-]
 
 
 [build-system]
@@ -49,4 +43,9 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.3.5",
     "ruff>=0.11.4",
+]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.12",
+    "termynal>=0.2.0",
 ]
