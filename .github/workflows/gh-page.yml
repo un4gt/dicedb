@@ -27,7 +27,7 @@ jobs:
                     python-version-file: .python-version
             -
                 name: Install the project
-                run: uv sync -- group docs
+                run: uv sync --group docs
             -
                 name: build Html
                 run: uv run -- mkdocs build
