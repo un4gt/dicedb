@@ -3,12 +3,41 @@ name = "dicedb"
 version = "0.1.1"
 description = "A simple DiceDB client for Python"
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "un4gt", email = "mt3085570450@outlook.com" }
 ]
 requires-python = ">=3.8"
 dependencies = [
     "protobuf>=5.29.4",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/un4gt/dicedb"
+Documentation = "https://un4gt.github.io/dicedb/"
+Repository = "https://github.com/un4gt/dicedb.git"
+"Bug Tracker" = "https://github.com/un4gt/dicedb/issues"
+Changelog = "https://github.com/un4gt/dicedb.git/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.12",
+    "termynal>=0.2.0",
 ]
 
 
